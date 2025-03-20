@@ -1,34 +1,17 @@
-name: Deploy to SmarterASP.NET via FTP
-
-on:
-  push:
-    branches:
-      - master  # Change this to your deployment branch
+name: Build project and deploy to SmarterASP.NET
+on: [push]
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    
+  build_and_deploy:
+    name: Build package and deploy to SmarterASP.NET
+    runs-on: windows-latest
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
+      - name: build file
+        uses: actions/checkout@v4
 
-      - name: Setup .NET Core
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: '8.0' # Change this if needed
-
-      - name: Restore Dependencies
-        run: dotnet restore
-
-      - name: Build Project
-        run: dotnet publish RentBuySell/RentBuySell.csproj -c Release -o publish
-
-      - name: Deploy via FTP
+      - name: Sync files
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}          
-          server-dir: "/www/rentbuysell/"
-          local-dir: "./publish/"
+          server: win1022.site4now.net
+          username: krishnareddi1254-001
+          password: newp@ssw0rD
