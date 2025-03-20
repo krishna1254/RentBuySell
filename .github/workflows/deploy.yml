@@ -22,7 +22,7 @@ jobs:
         run: dotnet restore
 
       - name: Build Project
-        run: dotnet publish -c Release -o publish
+        run: dotnet publish RentBuySell/RentBuySell.csproj -c Release -o publish
 
       - name: Deploy via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
