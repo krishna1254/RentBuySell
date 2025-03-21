@@ -1,4 +1,4 @@
-name: Build project and deploy to SmarterASP.NET
+name: Build and Deploy to SmarterASP.NET
 
 on:
   push:
@@ -9,6 +9,7 @@ jobs:
   build_and_deploy:
     name: Build package and deploy to SmarterASP.NET
     runs-on: windows-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -24,12 +25,10 @@ jobs:
           cd RentBuySell  # Change this to your actual project folder
           dotnet publish RentBuySell.csproj -c Release -o ../published_app
 
-      - name: Display published files (for debugging)
-        run: dotnet publish RentBuySell/RentBuySell.csproj -c Release -o published_app
+      - name: Create app_offline.htm
+        run: echo "<html><body><h1>Site is under maintenance...</h1></body></html>" > published_app/app_offline.htm
 
-     
-
-      - name: Sync files to SmarterASP.NET
+      - name: Upload app_offline.htm to SmarterASP.NET
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: win1022.site4now.net
@@ -38,8 +37,16 @@ jobs:
           local-dir: published_app/
           server-dir: /wwwroot/
 
-      - name: Start the web server (if necessary)
+      - name: Deploy application files to SmarterASP.NET
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: win1022.site4now.net
+          username: krishnareddi1254-001
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: published_app/
+          server-dir: /wwwroot/
+
+      - name: Remove app_offline.htm to bring site back online
         run: |
-          echo "Starting the web server..."
-          # In case you need to start the site via Web Deploy, you can add the start steps here.
-          # Since we used MSDeploy to restart, this might be unnecessary.
+          echo "Removing app_offline.htm..."
+          curl -u "krishnareddi1254-001:${{ secrets.FTP_PASSWORD }}" -Q "DELE /wwwroot/app_offline.htm" ftp://win1022.site4now.net
