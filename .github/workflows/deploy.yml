@@ -14,21 +14,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Display current directory (for debugging)
-        run: pwd
-
-      - name: Display files in repository (for debugging)
-        run: dir
-
       - name: Publish .NET Core Application
         run: |
-          cd RentBuySell  # Change this to your actual project folder
+          cd RentBuySell  # Change to your project folder if needed
           dotnet publish RentBuySell.csproj -c Release -o ../published_app
 
       - name: Create app_offline.htm
         run: echo "<html><body><h1>Site is under maintenance...</h1></body></html>" > published_app/app_offline.htm
 
-      - name: Upload app_offline.htm to SmarterASP.NET
+      - name: Upload app_offline.htm (Take Site Offline)
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: win1022.site4now.net
@@ -36,6 +30,14 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: published_app/
           server-dir: /wwwroot/
+
+      - name: Wait for app to unload
+        run: timeout /t 30
+
+      - name: Delete Locked Files Before Uploading
+        run: |
+          curl -u "krishnareddi1254-001:${{ secrets.FTP_PASSWORD }}" -Q "DELE /wwwroot/RentBuySell.dll" ftp://win1022.site4now.net
+          curl -u "krishnareddi1254-001:${{ secrets.FTP_PASSWORD }}" -Q "DELE /wwwroot/RentBuySell.exe" ftp://win1022.site4now.net
 
       - name: Deploy application files to SmarterASP.NET
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
@@ -46,7 +48,6 @@ jobs:
           local-dir: published_app/
           server-dir: /wwwroot/
 
-      - name: Remove app_offline.htm to bring site back online
+      - name: Remove app_offline.htm (Bring Site Back Online)
         run: |
-          echo "Removing app_offline.htm..."
           curl -u "krishnareddi1254-001:${{ secrets.FTP_PASSWORD }}" -Q "DELE /wwwroot/app_offline.htm" ftp://win1022.site4now.net
