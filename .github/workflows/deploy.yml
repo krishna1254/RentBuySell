@@ -1,8 +1,10 @@
 name: Build project and deploy to SmarterASP.NET
+
 on:
   push:
     branches:
       - master
+
 jobs:
   build_and_deploy:
     name: Build package and deploy to SmarterASP.NET
@@ -20,10 +22,18 @@ jobs:
       - name: Publish .NET Core Application
         run: |
           cd RentBuySell  # Change this to your actual project folder
-          dotnet publish RentBuySell.csproj  -c Release -o ../published_app
+          dotnet publish RentBuySell.csproj -c Release -o ../published_app
 
       - name: Display published files (for debugging)
         run: dotnet publish RentBuySell/RentBuySell.csproj -c Release -o published_app
+
+      - name: Stop the web server (restart the website)
+        run: |
+          echo "Stopping the web server..."
+          # Run an FTP command to stop the web server or restart the site (if available)
+          # SmarterASP.NET doesn't support direct "stop server" FTP commands but can be restarted through MSDeploy
+          # Alternatively, use an API or control panel if available
+          curl -u "krishnareddi1254-001:${{ secrets.FTP_PASSWORD }}" -X POST "ftp://win1022.site4now.net:21/stop_web_server"
 
       - name: Sync files to SmarterASP.NET
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
@@ -33,3 +43,10 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: published_app/
           server-dir: /wwwroot/
+
+      - name: Start the web server (restart the website)
+        run: |
+          echo "Starting the web server..."
+          # Run an FTP command or MSDeploy command to start the web server
+          curl -u "krishnareddi1254-001:${{ secrets.FTP_PASSWORD }}" -X POST "ftp://win1022.site4now.net:21/start_web_server"
+
