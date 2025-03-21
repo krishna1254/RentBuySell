@@ -6,14 +6,28 @@ jobs:
     name: Build package and deploy to SmarterASP.NET
     runs-on: windows-latest
     steps:
-      - name: build file
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Sync files
+      - name: Display current directory (for debugging)
+        run: pwd
+
+      - name: Display files in repository (for debugging)
+        run: dir
+
+      - name: Publish .NET Core Application
+        run: |
+          cd YourProjectName  # Change this to your actual project folder
+          dotnet publish -c Release -o ../published_app
+
+      - name: Display published files (for debugging)
+        run: dir published_app
+
+      - name: Sync files to SmarterASP.NET
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: win1022.site4now.net
           username: krishnareddi1254-001
-          password: newp@ssw0rD
+          password: ${{ secrets.FTP_PASSWORD }}
           local-dir: published_app/
           server-dir: /wwwroot/
