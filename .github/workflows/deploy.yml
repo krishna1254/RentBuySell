@@ -27,13 +27,7 @@ jobs:
       - name: Display published files (for debugging)
         run: dotnet publish RentBuySell/RentBuySell.csproj -c Release -o published_app
 
-      - name: Restart Website using MSDeploy
-        run: |
-          echo "Restarting the website..."
-          # MSDeploy restart command for SmarterASP.NET
-          # Using MSDeploy to restart the website (make sure the URL and credentials are correct)
-          curl -u "krishnareddi1254-001:${{ secrets.FTP_PASSWORD }}" \
-            -X POST "https://win1022.site4now.net:8172/msdeploy.axd?site=krishnareddi1254-001-site1"
+     
 
       - name: Sync files to SmarterASP.NET
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
