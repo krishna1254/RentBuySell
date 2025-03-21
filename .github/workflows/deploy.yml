@@ -15,3 +15,5 @@ jobs:
           server: win1022.site4now.net
           username: krishnareddi1254-001
           password: newp@ssw0rD
+          local-dir: published_app/
+          server-dir: /wwwroot/
