@@ -17,11 +17,11 @@ jobs:
 
       - name: Publish .NET Core Application
         run: |
-          cd YourProjectName  # Change this to your actual project folder
-          dotnet publish -c Release -o ../published_app
+          cd RentBuySell  # Change this to your actual project folder
+          dotnet publish RentBuySell.csproj  -c Release -o ../published_app
 
       - name: Display published files (for debugging)
-        run: dir published_app
+        run: dotnet publish RentBuySell/RentBuySell.csproj -c Release -o published_app
 
       - name: Sync files to SmarterASP.NET
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
