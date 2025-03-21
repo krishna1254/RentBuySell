@@ -27,13 +27,13 @@ jobs:
       - name: Display published files (for debugging)
         run: dotnet publish RentBuySell/RentBuySell.csproj -c Release -o published_app
 
-      - name: Stop the web server (restart the website)
+      - name: Restart Website using MSDeploy
         run: |
-          echo "Stopping the web server..."
-          # Run an FTP command to stop the web server or restart the site (if available)
-          # SmarterASP.NET doesn't support direct "stop server" FTP commands but can be restarted through MSDeploy
-          # Alternatively, use an API or control panel if available
-          curl -u "krishnareddi1254-001:${{ secrets.FTP_PASSWORD }}" -X POST "ftp://win1022.site4now.net:21/stop_web_server"
+          echo "Restarting the website..."
+          # MSDeploy restart command for SmarterASP.NET
+          # Using MSDeploy to restart the website (make sure the URL and credentials are correct)
+          curl -u "krishnareddi1254-001:${{ secrets.FTP_PASSWORD }}" \
+            -X POST "https://win1022.site4now.net:8172/msdeploy.axd?site=krishnareddi1254-001-site1"
 
       - name: Sync files to SmarterASP.NET
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
@@ -44,9 +44,8 @@ jobs:
           local-dir: published_app/
           server-dir: /wwwroot/
 
-      - name: Start the web server (restart the website)
+      - name: Start the web server (if necessary)
         run: |
           echo "Starting the web server..."
-          # Run an FTP command or MSDeploy command to start the web server
-          curl -u "krishnareddi1254-001:${{ secrets.FTP_PASSWORD }}" -X POST "ftp://win1022.site4now.net:21/start_web_server"
-
+          # In case you need to start the site via Web Deploy, you can add the start steps here.
+          # Since we used MSDeploy to restart, this might be unnecessary.
