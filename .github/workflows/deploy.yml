@@ -45,7 +45,4 @@ jobs:
           local-dir: published_app/
           server-dir: /wwwroot/
 
-      - name: Remove app_offline.htm to bring site back online
-        run: |
-          echo "Removing app_offline.htm..."
-          curl -u "krishnareddi1254-001:${{ secrets.FTP_PASSWORD }}" -Q "DELE /wwwroot/app_offline.htm" ftp://win1022.site4now.net
+  
