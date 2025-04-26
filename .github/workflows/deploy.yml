@@ -1,37 +1,62 @@
-name: Build and Deploy to SmarterASP.NET
+name: Deploy to SmarterASP.NET via FTP
 
 on:
   push:
     branches:
-      - master
+      - master  # Change this to your deployment branch
 
 jobs:
-  build_and_deploy:
-    name: Build package and deploy to SmarterASP.NET
-    runs-on: windows-latest
-
+  build:
+    runs-on: ubuntu-latest
+    
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v3
 
-      - name: Display current directory (for debugging)
-        run: pwd
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0' # Change if needed
 
-      - name: Display files in repository (for debugging)
-        run: dir
+      - name: Restore Dependencies
+        run: dotnet restore
 
-      - name: Publish .NET Core Application
-        run: |
-          cd RentBuySell  # Change this to your actual project folder
-          dotnet publish RentBuySell.csproj -c Release -o ../published_app
- 
-      - name: Deploy application files to SmarterASP.NET
+      - name: Build Project
+        run: dotnet publish RentBuySell/RentBuySell.csproj -c Release -o publish
+
+      # 👉 Step 1: Bring app offline before deployment
+      - name: Bring Application Offline
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
-          server: win1022.site4now.net
-          username: krishnareddi1254-001
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: published_app/
-          server-dir: /wwwroot/
+          server-dir: "/www/rentbuysell/"
+          local-dir: "./app_offline/"
+          file-patterns: "app_offline.htm"
+          dangerous-clean-slate: false
 
-  
+      - name: Wait for app to unload
+        run: sleep 10  # Sleep 10 seconds on Ubuntu
+
+      # 👉 Step 2: Deploy the published files
+      - name: Deploy Application
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: "/www/rentbuysell/"
+          local-dir: "./publish/"
+
+      # 👉 Step 3: Remove app_offline.htm to bring app back online
+      - name: Remove App Offline File
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: "/www/rentbuysell/"
+          local-dir: "./empty_folder/"
+          file-patterns: "app_offline.htm"
+          delete-removed: true
