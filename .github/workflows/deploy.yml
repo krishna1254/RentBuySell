@@ -24,18 +24,7 @@ jobs:
         run: |
           cd RentBuySell  # Change this to your actual project folder
           dotnet publish RentBuySell.csproj -c Release -o ../published_app
-      - name: Create app_offline.htm
-        run: echo "<html><body><h1>Site is under maintenance...</h1></body></html>" > published_app/app_offline.htm
-
-      - name: Upload app_offline.htm to SmarterASP.NET
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
-        with:
-          server: win1022.site4now.net
-          username: krishnareddi1254-001
-          password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: published_app/
-          server-dir: /wwwroot/
-
+ 
       - name: Deploy application files to SmarterASP.NET
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
