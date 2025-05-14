@@ -13,19 +13,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Display current directory (for debugging)
-        run: pwd
-
-      - name: Display files in repository (for debugging)
-        run: dir
-
       - name: Publish .NET Core Application
         run: |
-          cd RentBuySell  # Change this to your actual project folder
-          dotnet publish RentBuySell.csproj  -c Release -o ../published_app
-      - name: Display published files (for debugging)
-        run: dotnet publish RentBuySell/RentBuySell.csproj -c Release -o published_app
+          cd RentBuySell
+          dotnet publish RentBuySell.csproj -c Release -o ../published_app
 
+      # Step 1: Upload app_offline.htm to stop app
+      - name: Upload app_offline.htm to stop app
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: win1022.site4now.net
+          username: krishnareddi1254-001
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: offline-page/
+          server-dir: /wwwroot/
+
+      # Step 2: Deploy actual application
       - name: Sync files to SmarterASP.NET
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
@@ -34,3 +37,11 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: published_app/
           server-dir: /wwwroot/
+
+      # Step 3: Remove app_offline.htm to restart app
+      - name: Remove app_offline.htm to restart app
+        run: |
+          curl -s --user krishnareddi1254-001:${{ secrets.FTP_PASSWORD }} \
+          --ftp-method nocwd \
+          -Q "-DELE /wwwroot/app_offline.htm" \
+          ftp://win1022.site4now.net/
