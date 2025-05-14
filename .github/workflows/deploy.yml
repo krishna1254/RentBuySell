@@ -32,5 +32,5 @@ jobs:
           server: win1022.site4now.net
           username: krishnareddi1254-001
           password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: "./publish/"
-          server-dir: "/www/rentbuysell/"
+          local-dir: published_app/
+          server-dir: /wwwroot/
