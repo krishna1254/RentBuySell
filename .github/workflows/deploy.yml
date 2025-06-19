@@ -22,9 +22,10 @@ jobs:
       - name: Publish .NET Core Application
         run: |
           cd RentBuySell  # Change this to your actual project folder
-          dotnet publish RentBuySell.csproj  -c Release -o ../published_app
+          dotnet publish RentBuySell.csproj -c Release -o ../published_app
+
       - name: Display published files (for debugging)
-        run: dotnet publish RentBuySell/RentBuySell.csproj -c Release -o published_app
+        run: dir published_app
 
       - name: Sync files to SmarterASP.NET
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
@@ -33,4 +34,4 @@ jobs:
           username: krishnareddi1254-001
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: published_app/
-          server-dir: /wwwroot/
+          server-dir: /www/rentbuy/
