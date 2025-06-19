@@ -21,7 +21,7 @@ jobs:
 
       - name: Publish .NET Core Application
         run: |
-          cd RentBuySell  # Change this to your actual project folder
+          cd RentBuySell  # Make sure this is your actual project folder
           dotnet publish RentBuySell.csproj -c Release -o ../published_app
 
       - name: Display published files (for debugging)
@@ -34,4 +34,5 @@ jobs:
           username: krishnareddi1254-001
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: published_app/
-          server-dir: /www/rentbuy/
+          server-dir: rentbuy/
+          dangerous-clean-slate: true
